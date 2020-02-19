@@ -60,6 +60,22 @@ class App extends React.Component {
         else if (navigator.appVersion.indexOf("MSIE") !== -1) this.BrowserVersion = "Internet Explorer";
         else if (navigator.appCodeName.indexOf("Mozilla") !== -1) this.BrowserVersion = "Firefox";
 
+        this.time = new Date();
+        console.log(this.time);
+        let http = new XMLHttpRequest();
+        http.open("GET","http://worldtimeapi.org/api/ip", true);
+        http.send();
+
+        http.onreadystatechange = function (thi) {
+            if (this.readyState == 4 && this.status == 200){
+                let atomdata = JSON.parse(this.responseText);
+                let atomtime =  new Date(atomdata.dateTime);
+                let difference = App.constructor.time - atomtime;
+                console.log(difference);
+            }
+        }
+        ;
+
         this.setState({OS: this.OSName})
         this.setState({Browser: this.BrowserVersion})
     }

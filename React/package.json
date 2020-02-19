@@ -20,7 +20,7 @@
     "react-html5-camera-photo": "^1.5.2",
     "react-images-upload": "^1.2.7",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.2.0",
+    "react-scripts": "^3.4.0",
     "reactstrap": "^8.1.1",
     "socket.io-client": "^2.3.0"
   },
