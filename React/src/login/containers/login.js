@@ -21,6 +21,7 @@ class App extends React.Component {
         this.state = {
             OS: "",
             toSlave: false,
+            timeDiff: 0
 
 
         };
@@ -60,20 +61,21 @@ class App extends React.Component {
         else if (navigator.appVersion.indexOf("MSIE") !== -1) this.BrowserVersion = "Internet Explorer";
         else if (navigator.appCodeName.indexOf("Mozilla") !== -1) this.BrowserVersion = "Firefox";
 
-        this.time = new Date();
-        console.log(this.time);
+
         let http = new XMLHttpRequest();
         http.open("GET","http://worldtimeapi.org/api/ip", true);
         http.send();
 
-        http.onreadystatechange = function (thi) {
-            if (this.readyState == 4 && this.status == 200){
-                let atomdata = JSON.parse(this.responseText);
-                let atomtime =  new Date(atomdata.dateTime);
-                let difference = App.constructor.time - atomtime;
-                console.log(difference);
+        http.onreadystatechange = function () {
+            if (http.readyState == 4 && http.status == 200){
+                let atomdata = JSON.parse(http.responseText);
+                let atomtime = new Date(atomdata.datetime);
+                let time = new Date()
+                let difference = (time - atomtime)/1000;
+                console.log(difference)
+                this.setState({timeDiff: difference})
             }
-        }
+        }.bind(this)
         ;
 
         this.setState({OS: this.OSName})
@@ -106,6 +108,9 @@ class App extends React.Component {
                 </h1>
                 <h1>
                     {"We think your Browser is " + this.state.Browser}
+                </h1>
+                <h1>
+                    {"Your time offset is" + this.state.timeDiff}
                 </h1>
                 <div >
 
