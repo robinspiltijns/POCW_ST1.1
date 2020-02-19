@@ -52,8 +52,16 @@ class App extends React.Component {
             if (navigator.appVersion.indexOf("Win")!==-1) this.OSName="Windows";
         }
 
+        if (navigator.appVersion.indexOf("Opera") !== -1) this.BrowserVersion = "Opera";
+        else if (navigator.appVersion.indexOf("Edge") !== -1) this.BrowserVersion = "Edge";
+        else if (navigator.appVersion.indexOf("Chrome") !== -1) this.BrowserVersion = "Chrome";
+        else if (navigator.appVersion.indexOf("Safari") !== -1) this.BrowserVersion = "Safari";
+        else if (navigator.appVersion.indexOf("FireFox") !== -1) this.BrowserVersion = "FireFox";
+        else if (navigator.appVersion.indexOf("MSIE") !== -1) this.BrowserVersion = "Internet Explorer";
+        else if (navigator.appCodeName.indexOf("Mozilla") !== -1) this.BrowserVersion = "Firefox";
 
         this.setState({OS: this.OSName})
+        this.setState({Browser: this.BrowserVersion})
     }
 
     //When the master button is clicked, switch to master, master is not already occupied.
@@ -78,7 +86,10 @@ class App extends React.Component {
                     {"You are on " + navigator.appVersion}
                 </h1>
                 <h1>
-                    {"We get " + this.state.OS}
+                    {"We think your OS is " + this.state.OS}
+                </h1>
+                <h1>
+                    {"We think your Browser is " + this.state.Browser}
                 </h1>
                 <div >
 
