@@ -7,7 +7,6 @@ const io = require('socket.io')(http); //maakt een socket instance
 const path = require('path');
 const fs = require('fs');
 const helpers = require('./helpers'); // importing helper functions
-const {createCanvas, loadImage, Image} = require('canvas');
 //The port on which this server will run.
 const port = 8004;
 
