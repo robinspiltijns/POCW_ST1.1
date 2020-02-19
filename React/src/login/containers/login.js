@@ -71,7 +71,10 @@ class App extends React.Component {
         return (
             <div>
                 <h1>
-                    {"You are on " + this.state.OS}
+                    {"You are on " + navigator.appVersion}
+                </h1>
+                <h1>
+                    {"We get " + this.state.OS}
                 </h1>
                 <div >
 
