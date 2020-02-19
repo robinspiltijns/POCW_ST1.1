@@ -1,0 +1,2 @@
+https://stackoverflow.com/questions/22125865/wait-until-flag-true
+https://en.wikipedia.org/wiki/Network_Time_Protocol
