@@ -42,13 +42,17 @@ class App extends React.Component {
 
     componentDidMount() {
         console.log(navigator);
-        if (navigator.appVersion.indexOf("Win")!==-1) this.OSName="Windows";
+        if (navigator.appVersion.indexOf("Mobile")!==-1) {
+            if (navigator.appVersion.indexOf("iPhone")!==-1) this.OSName="IOS";
+            if (navigator.appVersion.indexOf("Android")!==-1) this.OSName="Android";
+        } else {
+            if (navigator.appVersion.indexOf("X11")!==-1) this.OSName="UNIX";
+            if (navigator.appVersion.indexOf("Linux")!==-1) this.OSName="Linux";
+            if (navigator.appVersion.indexOf("Mac")!==-1) this.OSName="MacOS";
+            if (navigator.appVersion.indexOf("Win")!==-1) this.OSName="Windows";
+        }
 
-        if (navigator.appVersion.indexOf("Ios")!==-1) this.OSName="IOS";
-        if (navigator.appVersion.indexOf("Mac")!==-1) this.OSName="MacOS";
-        if (navigator.appVersion.indexOf("X11")!==-1) this.OSName="UNIX";
-        if (navigator.appVersion.indexOf("Linux")!==-1) this.OSName="Linux";
-        if (navigator.appVersion.indexOf("Android")!==-1) this.OSName="Android";
+
         this.setState({OS: this.OSName})
     }
 
