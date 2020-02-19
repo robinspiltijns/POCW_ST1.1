@@ -14,15 +14,17 @@ class App extends React.Component {
         super();
         //Binding allows the function to access the state of this component, no matter where it is invoked
 
+
         this.slave = this.slave.bind(this);
 
         //This allows us to display different pages without reloading
         this.state = {
-
+            OS: "",
             toSlave: false,
 
 
         };
+
 
         // connect to the socket channel for login-clients
         this.loginChannel = io('/loginChannel');
@@ -36,6 +38,17 @@ class App extends React.Component {
         //this http request asks the server to update this client's token, which will be used to identify this client
         axios.get('/login').then((res) => {
         });
+    }
+
+    componentDidMount() {
+        console.log(navigator);
+        if (navigator.appVersion.indexOf("Win")!==-1) this.OSName="Windows";
+        if (navigator.appVersion.indexOf("Android")!==-1) this.OSName="Android";
+        if (navigator.appVersion.indexOf("Ios")!==-1) this.OSName="IOS";
+        if (navigator.appVersion.indexOf("Mac")!==-1) this.OSName="MacOS";
+        if (navigator.appVersion.indexOf("X11")!==-1) this.OSName="UNIX";
+        if (navigator.appVersion.indexOf("Linux")!==-1) this.OSName="Linux";
+        this.setState({OS: this.OSName})
     }
 
     //When the master button is clicked, switch to master, master is not already occupied.
@@ -56,17 +69,13 @@ class App extends React.Component {
 
         return (
             <div>
-                <Helmet>
-                    <style>{'body { background-color: #032F64; }'}</style>
-                </Helmet>
                 <h1>
-                    Multicat
+                    {"You are on " + this.state.OS}
                 </h1>
-                <img className='center' src={nyan} alt = ''/>
                 <div >
 
                     <button name='slave' onClick={this.slave}>
-                        Thanks
+                        Send
                     </button>
 
                 </div>
