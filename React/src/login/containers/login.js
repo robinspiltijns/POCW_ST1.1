@@ -20,8 +20,10 @@ class App extends React.Component {
         //This allows us to display different pages without reloading
         this.state = {
             OS: "",
+            Browser: "",
             toSlave: false,
-            timeDiff: 0
+            timeDiff: 0,
+            KULNetwork: false,
 
 
         };
@@ -61,7 +63,6 @@ class App extends React.Component {
         else if (navigator.appVersion.indexOf("MSIE") !== -1) this.BrowserVersion = "Internet Explorer";
         else if (navigator.appCodeName.indexOf("Mozilla") !== -1) this.BrowserVersion = "Firefox";
 
-
         let http = new XMLHttpRequest();
         http.open("GET","http://worldtimeapi.org/api/ip", true);
         http.send();
@@ -77,8 +78,7 @@ class App extends React.Component {
             }
         }.bind(this)
         ;
-
-        this.setState({OS: this.OSName})
+        this.setState({OS: this.OSName});
         this.setState({Browser: this.BrowserVersion})
     }
 
@@ -90,6 +90,12 @@ class App extends React.Component {
             toSlave: true,
             toOverview: false,
         })
+    }
+    yes() {
+        this.setState({KULNetwork: true})
+    }
+    no() {
+        this.setState({KULNetwork: false})
     }
 
 
@@ -110,10 +116,26 @@ class App extends React.Component {
                     {"We think your Browser is " + this.state.Browser}
                 </h1>
                 <h1>
-                    {"Your time offset is" + this.state.timeDiff}
+                    {"Your time offset is " + this.state.timeDiff}
+                </h1>
+                <div>
+                <h1>
+                    {"Are you currently connected to the KUL network?"}
+                </h1>
+                    <button name='yes' onClick={this.yes}>
+                        Yes
+                    </button>
+                    <button name='no' onClick={this.no}>
+                        No
+                    </button>
+                </div>
+                <h1>
+                    {"You pressed " + this.state.KULNetwork}
                 </h1>
                 <div >
-
+                <h1>
+                    {"Thank You"}
+                </h1>
                     <button name='slave' onClick={this.slave}>
                         Send
                     </button>
