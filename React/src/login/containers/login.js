@@ -20,6 +20,7 @@ class App extends React.Component {
             Browser: "",
             toEnd: false,
             timeDiff: 0,
+            timeDiffSocket:0,
             KULNetwork: false,
         };
 
@@ -39,6 +40,23 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        this.loginChannel.emit('getTimeDiffs');
+
+        this.loginChannel.on('timeDiffs', (time) => {
+            let receivedTime = new Date().getTime();
+            this.loginChannel.emit('timeData', {
+                id: this.state.id,
+                t1: time, //This is the time on which the server sent 'initialiseCountdown'
+                t2: receivedTime,
+                t3: new Date().getTime()
+            });
+        });
+
+        this.loginChannel.on('setState', (state) => {
+            console.log(JSON.stringify(state));
+            this.setState(state);
+        });
+
         console.log(navigator);
         if (navigator.appVersion.indexOf("Mobile")!==-1) {
             if (navigator.appVersion.indexOf("iPhone")!==-1) this.OSName="IOS";
@@ -117,6 +135,9 @@ class App extends React.Component {
                 </h1>
                 <h1>
                     {"Your time offset is " + this.state.timeDiff}
+                </h1>
+                <h1>
+                    {"time diff socket =" + this.state.timeDiffSocket}
                 </h1>
                 <div>
                 <h1>
