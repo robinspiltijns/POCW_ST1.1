@@ -1,8 +1,6 @@
 import React from 'react';
 import axios from '../../common/services/httpService';
 import {Redirect} from "react-router-dom";
-import Helmet from 'react-helmet'
-import nyan from '../resources/nyan.gif'
 import io from 'socket.io-client'
 import './login.css'
 import 'reactstrap'
@@ -13,19 +11,16 @@ class App extends React.Component {
     constructor() {
         super();
         //Binding allows the function to access the state of this component, no matter where it is invoked
-
-
-        this.slave = this.slave.bind(this);
-
+        this.send = this.send.bind(this);
+        this.no = this.no.bind(this);
+        this.yes = this.yes.bind(this);
         //This allows us to display different pages without reloading
         this.state = {
             OS: "",
             Browser: "",
-            toSlave: false,
+            toEnd: false,
             timeDiff: 0,
             KULNetwork: false,
-
-
         };
 
 
@@ -85,10 +80,15 @@ class App extends React.Component {
     //When the master button is clicked, switch to master, master is not already occupied.
 
     //When the slave button is clicked, switch to slave
-    slave() {
+    send() {
+        this.loginChannel.emit('userData', {
+            OS: this.state.OS,
+            Browser: this.state.Browser,
+            timeDiff: this.state.timeDiff,
+            KULNetwork: this.state.KULNetwork,
+        });
         this.setState({
-            toSlave: true,
-            toOverview: false,
+            toEnd: true,
         })
     }
     yes() {
@@ -100,7 +100,7 @@ class App extends React.Component {
 
 
     render() {
-        if (this.state.toSlave === true) {
+        if (this.state.toEnd === true) {
             return <Redirect to='/slave'/>
         }
 
@@ -136,7 +136,7 @@ class App extends React.Component {
                 <h1>
                     {"Thank You"}
                 </h1>
-                    <button name='slave' onClick={this.slave}>
+                    <button name='send' onClick={this.send}>
                         Send
                     </button>
 
