@@ -21,7 +21,6 @@ class App extends React.Component {
         this.state = {
             OS: "",
             Browser: "",
-            diffWTA: 0,
             latency: 0,
             KULNetwork: false,
             toEnd: false,
@@ -83,7 +82,6 @@ class App extends React.Component {
                 })
             }
         });
-        this.loginChannel.on('a', () => console.log('a'));
         //OS
         let OS = this.getOS();
         console.log("OS: " + OS);
@@ -93,29 +91,6 @@ class App extends React.Component {
         let browser = this.getBrowser();
         console.log("browser: " + browser);
         this.setState({Browser: browser});
-
-        //SOCKET TIMEDIFF
-
-        //WORLDAPI
-        let http = new XMLHttpRequest();
-        http.open("GET", "http://worldtimeapi.org/api/ip", true);
-        http.send();
-        http.onreadystatechange = function () {
-            if (http.readyState === 4 && http.status === 200) {
-                let atomdata = JSON.parse(http.responseText);
-                let atomtime = new Date(atomdata.datetime);
-                let time = new Date();
-                let difference = (time - atomtime) / 1000;
-                console.log(difference);
-                this.setState({diffWTA: difference})
-            }
-        }.bind(this);
-        this.loginChannel.on('setState', (state) => {
-            console.log(JSON.stringify(state));
-            this.setState(state);
-        });
-        this.setState({OS: this.OSName});
-        this.setState({Browser: this.BrowserVersion})
     }
 
     //When the master button is clicked, switch to master, master is not already occupied.
@@ -125,7 +100,6 @@ class App extends React.Component {
         this.loginChannel.emit('userData', {
             OS: this.state.OS,
             Browser: this.state.Browser,
-            diffWTA: this.state.diffWTA,
             KULNetwork: this.state.KULNetwork,
             latency: this.state.latency,
             clientTime: new Date().getTime()

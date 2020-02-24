@@ -31,7 +31,7 @@ class App extends React.Component {
                 <Helmet>
                     <style>{`body {background-color: ${this.state.color}; }`}</style>
                 </Helmet>
-                <h1>Thanks!</h1>
+                <h1>Thanks! You can close this page now.</h1>
             </div>
         )
     }
