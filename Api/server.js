@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 //Namespaces
 const loginChannel = io.of('/loginChannel');
-const slaveChannel = io.of('/slaveChannel');
+
 //LOGIN
 loginChannel.on('connection', (socket) => {
     socket.on('a', () => {
