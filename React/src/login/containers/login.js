@@ -66,6 +66,11 @@ class App extends React.Component {
             this.loginChannel.emit('a');
         }, 2000);
         this.loginChannel.on('b', () => {
+
+            let now = Date.now();
+            console.log('this.startTime: ' + this.startTime);
+            console.log('date.now: ' + now);
+
             this.totalLatency = Date.now() - this.startTime;
             if (this.state.adjustedLatency) {
                 console.log("in if from there");
