@@ -6,6 +6,7 @@ import './login.css'
 import 'reactstrap'
 
 // merk op dat je op de master zou kunnen komen, als je op login geraakt nadat een master heeft geconnect
+const n = 2; //amount of checkboxes
 
 class App extends React.Component {
     constructor() {
@@ -15,16 +16,17 @@ class App extends React.Component {
         this.no = this.no.bind(this);
         this.yes = this.yes.bind(this);
         this.getOS = this.getOS.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         //This allows us to display different pages without reloading
         this.state = {
             OS: "",
             Browser: "",
-            timeDiff: 0,
+            diffWTA: 0,
             latency: 0,
-            timeDiffSocket: 0,
             KULNetwork: false,
             toEnd: false,
-            adjustedLatency: false
+            adjustedLatency: false,
+            chosen: false
         };
         // connect to the socket channel for login-clients
         this.loginChannel = io('/loginChannel');
@@ -73,14 +75,8 @@ class App extends React.Component {
 
             this.totalLatency = Date.now() - this.startTime;
             if (this.state.adjustedLatency) {
-                console.log("in if from there");
-                console.log("this.state.latency: " + this.state.latency);
-                console.log("this.totalLatency: " + this.totalLatency);
-                console.log("formula in state: " + 0.5 * this.state.latency + 0.5 * this.totalLatency / 2);
                 this.setState({latency: 0.5 * this.state.latency + 0.5 * this.totalLatency / 2}) //0.5 to cancel random peaks
             } else {
-                console.log("first time in else");
-                console.log("lateny gonna be: " + this.totalLatency/2);
                 this.setState({
                     latency: this.totalLatency / 2,
                     adjustedLatency: true
@@ -111,7 +107,7 @@ class App extends React.Component {
                 let time = new Date();
                 let difference = (time - atomtime) / 1000;
                 console.log(difference);
-                this.setState({timeDiff: difference})
+                this.setState({diffWTA: difference})
             }
         }.bind(this);
         this.loginChannel.on('setState', (state) => {
@@ -129,7 +125,7 @@ class App extends React.Component {
         this.loginChannel.emit('userData', {
             OS: this.state.OS,
             Browser: this.state.Browser,
-            timeDiff: this.state.timeDiff,
+            diffWTA: this.state.diffWTA,
             KULNetwork: this.state.KULNetwork,
             latency: this.state.latency,
             clientTime: new Date().getTime()
@@ -140,11 +136,21 @@ class App extends React.Component {
     }
 
     yes() {
-        this.setState({KULNetwork: true})
+        this.setState({
+            KULNetwork: true,
+            chosen: true
+        })
     }
 
     no() {
-        this.setState({KULNetwork: false})
+        this.setState({
+            KULNetwork: false,
+            chosen: true
+        })
+    }
+
+    handleChange(event) {
+        this.setState({KULNetwork: event.target.value});
     }
 
 
@@ -159,17 +165,16 @@ class App extends React.Component {
                     <li> {"Your OS: " + this.state.OS} </li>
                     <li> {"Your browser: " + this.state.Browser} </li>
                     <li> {"Your latency: " + this.state.latency} </li>
-                    <li>  {"Time difference with socket: " + this.state.timeDiffSocket} </li>
-                    <li>  {"Time difference with WTA: " + this.state.timeDiff} </li>
+                    <li>  {"Time difference with WTA: " + this.state.diffWTA} </li>
                 </ul>
                 <div>
-                    <h3>
+                    <h3 hidden={this.state.chosen}>
                         {"Are you currently connected to the KUL network?"}
                     </h3>
-                    <button name='yes' onClick={this.yes}>
+                    <button hidden={this.state.chosen} name='yes' onClick={this.yes}>
                         Yes
                     </button>
-                    <button name='no' onClick={this.no}>
+                    <button hidden={this.state.chosen} name='no' onClick={this.no}>
                         No
                     </button>
                 </div>
@@ -177,9 +182,10 @@ class App extends React.Component {
                     <h3>
                         {"Thank You"}
                     </h3>
-                    <button name='send' onClick={this.send}>
+                    <button name='send' onClick={this.send} disabled={!this.state.chosen}>
                         Send
                     </button>
+                    <div hidden={this.state.chosen}>Please indicate whether you are on a KUL network or not.</div>
                 </div>
             </div>
         )
