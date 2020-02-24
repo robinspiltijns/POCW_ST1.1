@@ -6,6 +6,7 @@ import './login.css'
 import 'reactstrap'
 
 // merk op dat je op de master zou kunnen komen, als je op login geraakt nadat een master heeft geconnect
+const n = 2; //amount of checkboxes
 
 class App extends React.Component {
     constructor() {
@@ -14,60 +15,41 @@ class App extends React.Component {
         this.send = this.send.bind(this);
         this.no = this.no.bind(this);
         this.yes = this.yes.bind(this);
+        this.getOS = this.getOS.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         //This allows us to display different pages without reloading
         this.state = {
             OS: "",
             Browser: "",
-            toEnd: false,
-            timeDiff: 0,
-            timeDiffSocket:0,
+            diffWTA: 0,
+            latency: 0,
             KULNetwork: false,
+            toEnd: false,
+            adjustedLatency: false,
+            chosen: false
         };
-
-
         // connect to the socket channel for login-clients
         this.loginChannel = io('/loginChannel');
-
-        // boolean checking whether master is occupied
-
-        // server informing client whether master is occupied
-        this.loginChannel.on('master occupation state', (state)=>{
-            this.setState({masterOccupied: state})
-        });
-        //this http request asks the server to update this client's token, which will be used to identify this client
         axios.get('/login').then((res) => {
         });
     }
 
-    componentDidMount() {
-        this.loginChannel.emit('getTimeDiffs');
-
-        this.loginChannel.on('timeDiffs', (time) => {
-            let receivedTime = new Date().getTime();
-            this.loginChannel.emit('timeData', {
-                id: this.state.id,
-                t1: time, //This is the time on which the server sent 'initialiseCountdown'
-                t2: receivedTime,
-                t3: new Date().getTime()
-            });
-        });
-
-        this.loginChannel.on('setState', (state) => {
-            console.log(JSON.stringify(state));
-            this.setState(state);
-        });
-
-        console.log(navigator);
-        if (navigator.appVersion.indexOf("Mobile")!==-1) {
-            if (navigator.appVersion.indexOf("iPhone")!==-1) this.OSName="IOS";
-            if (navigator.appVersion.indexOf("Android")!==-1) this.OSName="Android";
+    getOS() {
+        this.OSName = '';
+        if (navigator.appVersion.indexOf("Mobile") !== -1) {
+            if (navigator.appVersion.indexOf("iPhone") !== -1) this.OSName = "IOS";
+            if (navigator.appVersion.indexOf("Android") !== -1) this.OSName = "Android";
         } else {
-            if (navigator.appVersion.indexOf("X11")!==-1) this.OSName="UNIX";
-            if (navigator.appVersion.indexOf("Linux")!==-1) this.OSName="Linux";
-            if (navigator.appVersion.indexOf("Mac")!==-1) this.OSName="MacOS";
-            if (navigator.appVersion.indexOf("Win")!==-1) this.OSName="Windows";
+            if (navigator.appVersion.indexOf("X11") !== -1) this.OSName = "UNIX";
+            if (navigator.appVersion.indexOf("Linux") !== -1) this.OSName = "Linux";
+            if (navigator.appVersion.indexOf("Mac") !== -1) this.OSName = "MacOS";
+            if (navigator.appVersion.indexOf("Win") !== -1) this.OSName = "Windows";
         }
+        return this.OSName
+    }
 
+    getBrowser() {
+        this.BrowserVersion = '';
         if (navigator.appVersion.indexOf("Opera") !== -1) this.BrowserVersion = "Opera";
         else if (navigator.appVersion.indexOf("Edge") !== -1) this.BrowserVersion = "Edge";
         else if (navigator.appVersion.indexOf("Chrome") !== -1) this.BrowserVersion = "Chrome";
@@ -75,22 +57,63 @@ class App extends React.Component {
         else if (navigator.appVersion.indexOf("FireFox") !== -1) this.BrowserVersion = "FireFox";
         else if (navigator.appVersion.indexOf("MSIE") !== -1) this.BrowserVersion = "Internet Explorer";
         else if (navigator.appCodeName.indexOf("Mozilla") !== -1) this.BrowserVersion = "Firefox";
+        return this.BrowserVersion
+    }
 
+
+    componentDidMount() {
+        //Latency
+        setInterval(() => {
+            this.startTime = Date.now();
+            console.log("made this.startTime: " + this.startTime);
+            this.loginChannel.emit('a');
+        }, 2000);
+        this.loginChannel.on('b', () => {
+            let now = Date.now();
+            console.log('this.startTime: ' + this.startTime);
+            console.log('date.now: ' + now);
+
+            this.totalLatency = Date.now() - this.startTime;
+            if (this.state.adjustedLatency) {
+                this.setState({latency: 0.5 * this.state.latency + 0.5 * this.totalLatency / 2}) //0.5 to cancel random peaks
+            } else {
+                this.setState({
+                    latency: this.totalLatency / 2,
+                    adjustedLatency: true
+                })
+            }
+        });
+        this.loginChannel.on('a', () => console.log('a'));
+        //OS
+        let OS = this.getOS();
+        console.log("OS: " + OS);
+        this.setState({OS: OS});
+
+        //BROWSER
+        let browser = this.getBrowser();
+        console.log("browser: " + browser);
+        this.setState({Browser: browser});
+
+        //SOCKET TIMEDIFF
+
+        //WORLDAPI
         let http = new XMLHttpRequest();
-        http.open("GET","http://worldtimeapi.org/api/ip", true);
+        http.open("GET", "http://worldtimeapi.org/api/ip", true);
         http.send();
-
         http.onreadystatechange = function () {
-            if (http.readyState == 4 && http.status == 200){
+            if (http.readyState === 4 && http.status === 200) {
                 let atomdata = JSON.parse(http.responseText);
                 let atomtime = new Date(atomdata.datetime);
-                let time = new Date()
-                let difference = (time - atomtime)/1000;
-                console.log(difference)
-                this.setState({timeDiff: difference})
+                let time = new Date();
+                let difference = (time - atomtime) / 1000;
+                console.log(difference);
+                this.setState({diffWTA: difference})
             }
-        }.bind(this)
-        ;
+        }.bind(this);
+        this.loginChannel.on('setState', (state) => {
+            console.log(JSON.stringify(state));
+            this.setState(state);
+        });
         this.setState({OS: this.OSName});
         this.setState({Browser: this.BrowserVersion})
     }
@@ -102,18 +125,32 @@ class App extends React.Component {
         this.loginChannel.emit('userData', {
             OS: this.state.OS,
             Browser: this.state.Browser,
-            timeDiff: this.state.timeDiff,
+            diffWTA: this.state.diffWTA,
             KULNetwork: this.state.KULNetwork,
+            latency: this.state.latency,
+            clientTime: new Date().getTime()
         });
         this.setState({
             toEnd: true,
         })
     }
+
     yes() {
-        this.setState({KULNetwork: true})
+        this.setState({
+            KULNetwork: true,
+            chosen: true
+        })
     }
+
     no() {
-        this.setState({KULNetwork: false})
+        this.setState({
+            KULNetwork: false,
+            chosen: true
+        })
+    }
+
+    handleChange(event) {
+        this.setState({KULNetwork: event.target.value});
     }
 
 
@@ -124,45 +161,32 @@ class App extends React.Component {
 
         return (
             <div>
-                <h1>
-                    {"You are on " + navigator.appVersion}
-                </h1>
-                <h1>
-                    {"We think your OS is " + this.state.OS}
-                </h1>
-                <h1>
-                    {"We think your Browser is " + this.state.Browser}
-                </h1>
-                <h1>
-                    {"Your time offset is " + this.state.timeDiff}
-                </h1>
-                <h1>
-                    {"time diff socket =" + this.state.timeDiffSocket}
-                </h1>
+                <ul>
+                    <li> {"Your OS: " + this.state.OS} </li>
+                    <li> {"Your browser: " + this.state.Browser} </li>
+                    <li> {"Your latency: " + this.state.latency} </li>
+                    <li>  {"Time difference with WTA: " + this.state.diffWTA} </li>
+                </ul>
                 <div>
-                <h1>
-                    {"Are you currently connected to the KUL network?"}
-                </h1>
-                    <button name='yes' onClick={this.yes}>
+                    <h3 hidden={this.state.chosen}>
+                        {"Are you currently connected to the KUL network?"}
+                    </h3>
+                    <button hidden={this.state.chosen} name='yes' onClick={this.yes}>
                         Yes
                     </button>
-                    <button name='no' onClick={this.no}>
+                    <button hidden={this.state.chosen} name='no' onClick={this.no}>
                         No
                     </button>
                 </div>
-                <h1>
-                    {"You pressed " + this.state.KULNetwork}
-                </h1>
-                <div >
-                <h1>
-                    {"Thank You"}
-                </h1>
-                    <button name='send' onClick={this.send}>
+                <div>
+                    <h3>
+                        {"Thank You"}
+                    </h3>
+                    <button name='send' onClick={this.send} disabled={!this.state.chosen}>
                         Send
                     </button>
-
+                    <div hidden={this.state.chosen}>Please indicate whether you are on a KUL network or not.</div>
                 </div>
-                    {this.state.masterOccupied && <h2>Master has been occupied</h2>}
             </div>
         )
     }
