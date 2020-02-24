@@ -1,2 +1,3 @@
 sep=,
-OS,Browser,timeDiff,KULNetwork
+OS,Browser,timeDiff,KULNetwork,latency,socketTimeDiff
+"MacOS","Chrome",1.045,true,5.75,1.25
