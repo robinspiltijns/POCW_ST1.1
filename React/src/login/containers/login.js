@@ -63,10 +63,10 @@ class App extends React.Component {
         //Latency
         setInterval(() => {
             this.startTime = Date.now();
+            console.log("made this.startTime: " + this.startTime);
             this.loginChannel.emit('a');
         }, 2000);
         this.loginChannel.on('b', () => {
-
             let now = Date.now();
             console.log('this.startTime: ' + this.startTime);
             console.log('date.now: ' + now);
