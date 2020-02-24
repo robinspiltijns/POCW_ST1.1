@@ -68,8 +68,14 @@ class App extends React.Component {
         this.loginChannel.on('b', () => {
             this.totalLatency = Date.now() - this.startTime;
             if (this.state.adjustedLatency) {
+                console.log("in if from there");
+                console.log("this.state.latency: " + this.state.latency);
+                console.log("this.totalLatency: " + this.totalLatency);
+                console.log("formula in state: " + 0.5 * this.state.latency + 0.5 * this.totalLatency / 2);
                 this.setState({latency: 0.5 * this.state.latency + 0.5 * this.totalLatency / 2}) //0.5 to cancel random peaks
             } else {
+                console.log("first time in else");
+                console.log("lateny gonna be: " + this.totalLatency/2);
                 this.setState({
                     latency: this.totalLatency / 2,
                     adjustedLatency: true
