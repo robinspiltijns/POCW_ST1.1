@@ -28,7 +28,7 @@ const slaveChannel = io.of('/slaveChannel');
 //LOGIN
 loginChannel.on('connection', (socket) => {
     socket.on('a', () => {
-        loginChannel.emit('b')
+        loginChannel.to(socket.id).emit('b')
     });
     //Receive and process data of client
     socket.on('userData', (data) => {

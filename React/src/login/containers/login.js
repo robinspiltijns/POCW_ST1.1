@@ -87,6 +87,7 @@ class App extends React.Component {
                 })
             }
         });
+        this.loginChannel.on('a', () => console.log('a'));
         //OS
         let OS = this.getOS();
         console.log("OS: " + OS);
