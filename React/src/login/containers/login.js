@@ -69,16 +69,16 @@ class App extends React.Component {
             let now = Date.now();
             this.latency = (now - this.startTime)/2;
             this.currentOffset = now - serverTime - this.latency;
-            console.log('latency: ' + this.latency)
-            console.log('latest offset: ' + this.currentOffset)
+           // console.log('latency: ' + this.latency)
+          //  console.log('latest offset: ' + this.currentOffset)
             initialChecks++;
             if(initialChecks > 10) { //initial checks give inaccurate values
-                console.log('growing factor in avg: ' + checks*this.offset)
+               // console.log('growing factor in avg: ' + checks*this.offset)
                 this.offset = (checks*this.offset + this.currentOffset)/(checks +1);
-                console.log('latest average: ' + this.offset)
+               // console.log('latest average: ' + this.offset)
                 checks++
             } else {
-                console.log('in initial checks')
+               // console.log('in initial checks')
             }
             this.setState({
                 offset: this.offset
@@ -87,6 +87,10 @@ class App extends React.Component {
         })
         this.loginChannel.on('go', (date) => {
             this.setState({backgroundColor: 'GREEN'});
+            console.log('date: ' + date)
+            console.log('offset: ' + this.state.offset)
+            console.log('now: ' + Date.now())
+            console.log('total: ' + date - this.state.offset - Date.now())
             setTimeout(() => {
                 this.setState({backgroundColor: 'BLUE'})
             }, (date - this.state.offset - Date.now()))
