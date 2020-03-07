@@ -31,16 +31,6 @@ loginChannel.on('connection', (socket) => {
         loginChannel.to(socket.id).emit('b', Date.now())
     });
     //Receive and process data of client
-    socket.on('userData', (data) => {
-        let serverTime = new Date().getTime();
-        data.socketTimeDiff = serverTime - data.clientTime - data.latency;
-        delete data.clientTime;
-        let csv = json2csv.parse(data).replace('"OS","Browser","KULNetwork","latency","socketTimeDiff"', '');
-        fs.appendFile('file.csv', csv, function (err) {
-            if (err) throw err;
-            console.log('The "data to append" was appended to file!');
-        });
-    });
 });
 
 http.listen(port, () => {
