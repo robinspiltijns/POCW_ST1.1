@@ -30,6 +30,9 @@ loginChannel.on('connection', (socket) => {
     socket.on('a', () => {
         loginChannel.to(socket.id).emit('b', Date.now())
     });
+    socket.on('start', () => {
+        loginChannel.emit('go', Date.now() + 3000)
+    })
     //Receive and process data of client
 });
 

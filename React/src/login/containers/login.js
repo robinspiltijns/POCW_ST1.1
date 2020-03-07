@@ -15,8 +15,10 @@ class App extends React.Component {
     constructor() {
         super();
         this.sendA = this.sendA.bind(this);
+        this.start = this.start.bind(this);
         //This allows us to display different pages without reloading
         this.state = {
+            backgroundColor: 'WHITE',
             offset: 0,
             OS: "",
             Browser: "",
@@ -83,6 +85,11 @@ class App extends React.Component {
             })
             interval = this.latency*20
         })
+        this.loginChannel.on('go', (date) => {
+            setTimeout(() => {
+                this.setState({backgroundColor: 'BLUE'})
+            }, (date - this.state.offset - Date.now()))
+        })
     }
 
     sendA() {
@@ -93,14 +100,22 @@ class App extends React.Component {
         }, interval)
     }
 
+    start() {
+        this.loginChannel.emit('start')
+    }
+
     render() {
         if (this.state.toEnd === true) {
             return <Redirect to='/slave'/>
         }
 
         return (
-            <div>
-                {this.state.offset}
+            <div style={{
+                backgroundColor: this.state.backgroundColor,
+                height: 1000
+            }}>
+                <div>{this.state.offset}</div>
+                <button onClick={this.start}> START </button>
             </div>
         )
     }
