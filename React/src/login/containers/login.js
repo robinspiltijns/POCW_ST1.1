@@ -86,6 +86,7 @@ class App extends React.Component {
             interval = this.latency*20
         })
         this.loginChannel.on('go', (date) => {
+            this.setState({backgroundColor: 'GREEN'});
             setTimeout(() => {
                 this.setState({backgroundColor: 'BLUE'})
             }, (date - this.state.offset - Date.now()))
