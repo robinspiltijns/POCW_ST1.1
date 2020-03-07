@@ -93,7 +93,7 @@ class App extends React.Component {
             console.log('total: ' + date - this.state.offset - Date.now())
             setTimeout(() => {
                 this.setState({backgroundColor: 'BLUE'})
-            }, (date - this.state.offset - Date.now()))
+            }, (date + this.state.offset - Date.now()))
         })
     }
 
