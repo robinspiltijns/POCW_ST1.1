@@ -7,18 +7,17 @@ import 'reactstrap'
 
 // merk op dat je op de master zou kunnen komen, als je op login geraakt nadat een master heeft geconnect
 const n = 2; //amount of checkboxes
+let initialChecks = 0;
+let checks = 0;
+let interval = 500;
 
 class App extends React.Component {
     constructor() {
         super();
-        //Binding allows the function to access the state of this component, no matter where it is invoked
-        this.send = this.send.bind(this);
-        this.no = this.no.bind(this);
-        this.yes = this.yes.bind(this);
-        this.getOS = this.getOS.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.sendA = this.sendA.bind(this);
         //This allows us to display different pages without reloading
         this.state = {
+            offset: 0,
             OS: "",
             Browser: "",
             latency: 0,
@@ -61,72 +60,38 @@ class App extends React.Component {
 
 
     componentDidMount() {
+        this.offset = 0;
         //Latency
-        setInterval(() => {
-            this.startTime = Date.now();
-            console.log("made this.startTime: " + this.startTime);
-            this.loginChannel.emit('a');
-        }, 2000);
-        this.loginChannel.on('b', () => {
+        this.sendA();
+        this.loginChannel.on('b', (serverTime) => {
             let now = Date.now();
-            console.log('this.startTime: ' + this.startTime);
-            console.log('date.now: ' + now);
-
-            this.totalLatency = Date.now() - this.startTime;
-            if (this.state.adjustedLatency) {
-                this.setState({latency: 0.5 * this.state.latency + 0.5 * this.totalLatency / 2}) //0.5 to cancel random peaks
+            this.latency = (now - this.startTime)/2;
+            this.currentOffset = now - serverTime - this.latency;
+            console.log('latency: ' + this.latency)
+            console.log('latest offset: ' + this.currentOffset)
+            initialChecks++;
+            if(initialChecks > 10) { //initial checks give inaccurate values
+                console.log('growing factor in avg: ' + checks*this.offset)
+                this.offset = (checks*this.offset + this.currentOffset)/(checks +1);
+                console.log('latest average: ' + this.offset)
+                checks++
             } else {
-                this.setState({
-                    latency: this.totalLatency / 2,
-                    adjustedLatency: true
-                })
+                console.log('in initial checks')
             }
-        });
-        //OS
-        let OS = this.getOS();
-        console.log("OS: " + OS);
-        this.setState({OS: OS});
-
-        //BROWSER
-        let browser = this.getBrowser();
-        console.log("browser: " + browser);
-        this.setState({Browser: browser});
-    }
-
-    //When the master button is clicked, switch to master, master is not already occupied.
-
-    //When the slave button is clicked, switch to slave
-    send() {
-        this.loginChannel.emit('userData', {
-            OS: this.state.OS,
-            Browser: this.state.Browser,
-            KULNetwork: this.state.KULNetwork,
-            latency: this.state.latency,
-            clientTime: new Date().getTime()
-        });
-        this.setState({
-            toEnd: true,
+            this.setState({
+                offset: this.offset
+            })
+            interval = this.latency*20
         })
     }
 
-    yes() {
-        this.setState({
-            KULNetwork: true,
-            chosen: true
-        })
+    sendA() {
+        setTimeout(() => {
+            this.startTime = Date.now();
+            this.loginChannel.emit('a');
+            this.sendA()
+        }, interval)
     }
-
-    no() {
-        this.setState({
-            KULNetwork: false,
-            chosen: true
-        })
-    }
-
-    handleChange(event) {
-        this.setState({KULNetwork: event.target.value});
-    }
-
 
     render() {
         if (this.state.toEnd === true) {
@@ -135,32 +100,7 @@ class App extends React.Component {
 
         return (
             <div>
-                <ul>
-                    <li> {"Your OS: " + this.state.OS} </li>
-                    <li> {"Your browser: " + this.state.Browser} </li>
-                    <li> {"Your latency: " + this.state.latency} </li>
-                    <li>  {"Time difference with WTA: " + this.state.diffWTA} </li>
-                </ul>
-                <div>
-                    <h3 hidden={this.state.chosen}>
-                        {"Are you currently connected to the KUL network?"}
-                    </h3>
-                    <button hidden={this.state.chosen} name='yes' onClick={this.yes}>
-                        Yes
-                    </button>
-                    <button hidden={this.state.chosen} name='no' onClick={this.no}>
-                        No
-                    </button>
-                </div>
-                <div>
-                    <h3>
-                        {"Thank You"}
-                    </h3>
-                    <button name='send' onClick={this.send} disabled={!this.state.chosen}>
-                        Send
-                    </button>
-                    <div hidden={this.state.chosen}>Please indicate whether you are on a KUL network or not.</div>
-                </div>
+                {this.state.offset}
             </div>
         )
     }
