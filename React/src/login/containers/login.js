@@ -127,8 +127,8 @@ class App extends React.Component {
     }
 
     resetAnimation() {
+        this.state.animate = false;
         this.animation.current.reset();
-        this.state.animate = false
     }
 
     render() {
