@@ -99,7 +99,7 @@ class App extends React.Component {
             }, (date + this.state.offset - Date.now()))
         });
         this.loginChannel.on('startAnimation', (startTime) => {
-            this.resetAnimation();build
+            this.resetAnimation();
             setTimeout(() => {
                 this.setState({animate: 'true'})
             }, (startTime + this.state.offset - Date.now()))
@@ -127,7 +127,8 @@ class App extends React.Component {
     }
 
     resetAnimation() {
-        this.animation.current.reset()
+        this.animation.current.reset();
+        this.state.animate = false
     }
 
     render() {
