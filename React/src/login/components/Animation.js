@@ -4,10 +4,11 @@ import React from 'react'
 class Animation extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { angle: 0 };
+        this.state = {
+            angle: 0 };
         this.updateAnimationState = this.updateAnimationState.bind(this);
         this.fpsAnimation = this.fpsAnimation.bind(this);
-        this.reset = this.reset.bind(this)
+        this.reset = this.reset.bind(this);
     }
 
     componentDidMount() {
@@ -19,7 +20,7 @@ class Animation extends React.Component {
 
             setInterval(() => {
                 if(this.props.running) {
-                    this.setState(prevState => ({angle: prevState.angle + 1}));
+                    this.setState(prevState => ({angle: (prevState.angle + 1)%360}));
                 }
             }, 16)
     }
@@ -37,6 +38,10 @@ class Animation extends React.Component {
 
     componentWillUnmount() {
         cancelAnimationFrame(this.rAF);
+    }
+
+    getFrame() {
+        return this.state.angle
     }
 
     render() {

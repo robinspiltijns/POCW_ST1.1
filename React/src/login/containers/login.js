@@ -148,7 +148,6 @@ class App extends React.Component {
                     <button onClick={this.syncAnimation}>Sync Animation</button>
                     <button onClick={this.resetAnimation}>Reset Animation</button>
                 </div>
-
                 <Animation ref={this.animation} running = {this.state.animate}/>
             </div>
         )
