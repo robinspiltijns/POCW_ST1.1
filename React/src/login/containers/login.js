@@ -17,24 +17,21 @@ class App extends React.Component {
         super();
         this.sendA = this.sendA.bind(this);
         this.start = this.start.bind(this);
+        this.toggleAnimation = this.toggleAnimation.bind(this);
         //This allows us to display different pages without reloading
         this.canvas = React.createRef();
         this.state = {
+            animate: false,
             backgroundColor: 'WHITE',
             offset: 0,
             OS: "",
             Browser: "",
             latency: 0,
-            KULNetwork: false,
             toEnd: false,
-            adjustedLatency: false,
-            chosen: false,
             browserDimensions: [window.innerWidth, window.innerHeight]
         };
         // connect to the socket channel for login-clients
         this.loginChannel = io('/loginChannel');
-        axios.get('/login').then((res) => {
-        });
     }
 
     getOS() {
@@ -112,6 +109,10 @@ class App extends React.Component {
         this.loginChannel.emit('start')
     }
 
+    toggleAnimation() {
+        this.setState(prevState => ({animate: !prevState.animate}))
+    }
+
     render() {
         if (this.state.toEnd === true) {
             return <Redirect to='/slave'/>
@@ -123,8 +124,12 @@ class App extends React.Component {
                 height: 1000
             }}>
                 <div>{this.state.offset}</div>
-                <button onClick={this.start}> START </button>
-                <Animation/>
+                <div>
+                    <button onClick={this.start}> START </button>
+                    <button onClick={this.toggleAnimation}>Toggle Animation</button>
+                </div>
+
+                <Animation running = {this.state.animate}/>
             </div>
         )
     }
