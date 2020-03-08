@@ -4,6 +4,7 @@ import {Redirect} from "react-router-dom";
 import io from 'socket.io-client'
 import './login.css'
 import 'reactstrap'
+import Animation from "../components/Animation";
 
 // merk op dat je op de master zou kunnen komen, als je op login geraakt nadat een master heeft geconnect
 const n = 2; //amount of checkboxes
@@ -17,6 +18,7 @@ class App extends React.Component {
         this.sendA = this.sendA.bind(this);
         this.start = this.start.bind(this);
         //This allows us to display different pages without reloading
+        this.canvas = React.createRef();
         this.state = {
             backgroundColor: 'WHITE',
             offset: 0,
@@ -26,7 +28,8 @@ class App extends React.Component {
             KULNetwork: false,
             toEnd: false,
             adjustedLatency: false,
-            chosen: false
+            chosen: false,
+            browserDimensions: [window.innerWidth, window.innerHeight]
         };
         // connect to the socket channel for login-clients
         this.loginChannel = io('/loginChannel');
@@ -121,6 +124,7 @@ class App extends React.Component {
             }}>
                 <div>{this.state.offset}</div>
                 <button onClick={this.start}> START </button>
+                <Animation/>
             </div>
         )
     }
