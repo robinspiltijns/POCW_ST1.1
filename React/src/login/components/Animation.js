@@ -22,7 +22,7 @@ class Animation extends React.Component {
                 if(this.props.running) {
                     this.setState(prevState => ({angle: (prevState.angle + 1)%360}));
                 }
-            }, 16)
+            }, 32)
     }
 
     updateAnimationState() {

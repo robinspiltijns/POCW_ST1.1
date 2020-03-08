@@ -122,7 +122,7 @@ class App extends React.Component {
         this.setState(prevState => ({animate: !prevState.animate}))
     }
 
-    syncAnimation() {
+    syncAnimation() { //NOTE: SOETKIN HAAR GSM WORDT LOS INGEHAALD DOOR DIE VAN MIJ
         this.loginChannel.emit('requestAnimation')
     }
 
