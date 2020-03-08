@@ -18,8 +18,11 @@ class App extends React.Component {
         this.sendA = this.sendA.bind(this);
         this.start = this.start.bind(this);
         this.toggleAnimation = this.toggleAnimation.bind(this);
+        this.syncAnimation = this.syncAnimation.bind(this);
+        this.resetAnimation = this.resetAnimation.bind(this);
         //This allows us to display different pages without reloading
         this.canvas = React.createRef();
+        this.animation = React.createRef();
         this.state = {
             animate: false,
             backgroundColor: 'WHITE',
@@ -94,8 +97,14 @@ class App extends React.Component {
             setTimeout(() => {
                 this.setState({backgroundColor: 'BLUE'})
             }, (date + this.state.offset - Date.now()))
-        })
-    }
+        });
+        this.loginChannel.on('startAnimation', (startTime) => {
+            this.resetAnimation();build
+            setTimeout(() => {
+                this.setState({animate: 'true'})
+            }, (startTime + this.state.offset - Date.now()))
+        });
+        }
 
     sendA() {
         setTimeout(() => {
@@ -113,6 +122,14 @@ class App extends React.Component {
         this.setState(prevState => ({animate: !prevState.animate}))
     }
 
+    syncAnimation() {
+        this.loginChannel.emit('requestAnimation')
+    }
+
+    resetAnimation() {
+        this.animation.current.reset()
+    }
+
     render() {
         if (this.state.toEnd === true) {
             return <Redirect to='/slave'/>
@@ -127,9 +144,11 @@ class App extends React.Component {
                 <div>
                     <button onClick={this.start}> START </button>
                     <button onClick={this.toggleAnimation}>Toggle Animation</button>
+                    <button onClick={this.syncAnimation}>Sync Animation</button>
+                    <button onClick={this.resetAnimation}>Reset Animation</button>
                 </div>
 
-                <Animation running = {this.state.animate}/>
+                <Animation ref={this.animation} running = {this.state.animate}/>
             </div>
         )
     }

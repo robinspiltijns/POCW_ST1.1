@@ -32,6 +32,9 @@ loginChannel.on('connection', (socket) => {
     });
     socket.on('start', () => {
         loginChannel.emit('go', Date.now() + 3000)
+    });
+    socket.on('requestAnimation', () => {
+        loginChannel.emit('startAnimation', Date.now() + 2000)
     })
     //Receive and process data of client
 });
