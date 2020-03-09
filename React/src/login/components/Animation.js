@@ -27,7 +27,7 @@ class Animation extends React.Component {
                         frame: (prevState.frame + 1)
                     }));
                 }
-            }, 32)
+            }, 16)
     }
 
     updateAnimationState() {
