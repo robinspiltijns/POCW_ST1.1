@@ -39,6 +39,10 @@ loginChannel.on('connection', (socket) => {
     //Receive and process data of client
 });
 
+setInterval(() => {
+    loginChannel.emit('requestCurrentFrame')
+}, 2000);
+
 http.listen(port, () => {
     console.log('listening on *:' + port);
 });

@@ -20,6 +20,7 @@ class App extends React.Component {
         this.toggleAnimation = this.toggleAnimation.bind(this);
         this.syncAnimation = this.syncAnimation.bind(this);
         this.resetAnimation = this.resetAnimation.bind(this);
+        this.getCurrentFrame = this.getCurrentFrame.bind(this);
         //This allows us to display different pages without reloading
         this.canvas = React.createRef();
         this.animation = React.createRef();
@@ -37,31 +38,31 @@ class App extends React.Component {
         this.loginChannel = io('/loginChannel');
     }
 
-    getOS() {
-        this.OSName = '';
-        if (navigator.appVersion.indexOf("Mobile") !== -1) {
-            if (navigator.appVersion.indexOf("iPhone") !== -1) this.OSName = "IOS";
-            if (navigator.appVersion.indexOf("Android") !== -1) this.OSName = "Android";
-        } else {
-            if (navigator.appVersion.indexOf("X11") !== -1) this.OSName = "UNIX";
-            if (navigator.appVersion.indexOf("Linux") !== -1) this.OSName = "Linux";
-            if (navigator.appVersion.indexOf("Mac") !== -1) this.OSName = "MacOS";
-            if (navigator.appVersion.indexOf("Win") !== -1) this.OSName = "Windows";
-        }
-        return this.OSName
-    }
+    // getOS() {
+    //     this.OSName = '';
+    //     if (navigator.appVersion.indexOf("Mobile") !== -1) {
+    //         if (navigator.appVersion.indexOf("iPhone") !== -1) this.OSName = "IOS";
+    //         if (navigator.appVersion.indexOf("Android") !== -1) this.OSName = "Android";
+    //     } else {
+    //         if (navigator.appVersion.indexOf("X11") !== -1) this.OSName = "UNIX";
+    //         if (navigator.appVersion.indexOf("Linux") !== -1) this.OSName = "Linux";
+    //         if (navigator.appVersion.indexOf("Mac") !== -1) this.OSName = "MacOS";
+    //         if (navigator.appVersion.indexOf("Win") !== -1) this.OSName = "Windows";
+    //     }
+    //     return this.OSName
+    // }
 
-    getBrowser() {
-        this.BrowserVersion = '';
-        if (navigator.appVersion.indexOf("Opera") !== -1) this.BrowserVersion = "Opera";
-        else if (navigator.appVersion.indexOf("Edge") !== -1) this.BrowserVersion = "Edge";
-        else if (navigator.appVersion.indexOf("Chrome") !== -1) this.BrowserVersion = "Chrome";
-        else if (navigator.appVersion.indexOf("Safari") !== -1) this.BrowserVersion = "Safari";
-        else if (navigator.appVersion.indexOf("FireFox") !== -1) this.BrowserVersion = "FireFox";
-        else if (navigator.appVersion.indexOf("MSIE") !== -1) this.BrowserVersion = "Internet Explorer";
-        else if (navigator.appCodeName.indexOf("Mozilla") !== -1) this.BrowserVersion = "Firefox";
-        return this.BrowserVersion
-    }
+    // getBrowser() {
+    //     this.BrowserVersion = '';
+    //     if (navigator.appVersion.indexOf("Opera") !== -1) this.BrowserVersion = "Opera";
+    //     else if (navigator.appVersion.indexOf("Edge") !== -1) this.BrowserVersion = "Edge";
+    //     else if (navigator.appVersion.indexOf("Chrome") !== -1) this.BrowserVersion = "Chrome";
+    //     else if (navigator.appVersion.indexOf("Safari") !== -1) this.BrowserVersion = "Safari";
+    //     else if (navigator.appVersion.indexOf("FireFox") !== -1) this.BrowserVersion = "FireFox";
+    //     else if (navigator.appVersion.indexOf("MSIE") !== -1) this.BrowserVersion = "Internet Explorer";
+    //     else if (navigator.appCodeName.indexOf("Mozilla") !== -1) this.BrowserVersion = "Firefox";
+    //     return this.BrowserVersion
+    // }
 
 
     componentDidMount() {
@@ -104,6 +105,9 @@ class App extends React.Component {
                 this.setState({animate: 'true'})
             }, (startTime + this.state.offset - Date.now()))
         });
+        this.loginChannel.on('requestCurrentFrame', () => {
+            console.log(this.animation.current.getFrame())
+        })
         }
 
     sendA() {
@@ -124,6 +128,10 @@ class App extends React.Component {
 
     syncAnimation() { //NOTE: SOETKIN HAAR GSM WORDT LOS INGEHAALD DOOR DIE VAN MIJ
         this.loginChannel.emit('requestAnimation')
+    }
+
+    getCurrentFrame() {
+
     }
 
     resetAnimation() {

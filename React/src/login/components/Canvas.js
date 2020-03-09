@@ -26,6 +26,7 @@ class Canvas extends React.Component {
         }
         ctx.fillRect(-width / 4, -height / 4, width / 2, height / 2);
         ctx.restore();
+        ctx.font = '40px Arial';
         ctx.fillText(angle.toString(),0,150);
     }
 
